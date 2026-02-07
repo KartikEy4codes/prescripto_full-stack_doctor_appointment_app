@@ -9,11 +9,16 @@ import stripe from "stripe";
 import razorpay from 'razorpay';
 
 // Gateway Initialize
-const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
-const razorpayInstance = new razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-})
+const stripeInstance = process.env.STRIPE_SECRET_KEY
+    ? new stripe(process.env.STRIPE_SECRET_KEY)
+    : null;
+
+const razorpayInstance = (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET)
+    ? new razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+    })
+    : null;
 
 // API to register user
 const registerUser = async (req, res) => {
@@ -239,6 +244,10 @@ const listAppointment = async (req, res) => {
 const paymentRazorpay = async (req, res) => {
     try {
 
+        if (!razorpayInstance) {
+            return res.json({ success: false, message: 'Razorpay is not configured' })
+        }
+
         const { appointmentId } = req.body
         const appointmentData = await appointmentModel.findById(appointmentId)
 
@@ -286,6 +295,10 @@ const verifyRazorpay = async (req, res) => {
 // API to make payment of appointment using Stripe
 const paymentStripe = async (req, res) => {
     try {
+
+        if (!stripeInstance) {
+            return res.json({ success: false, message: 'Stripe is not configured' })
+        }
 
         const { appointmentId } = req.body
         const { origin } = req.headers
