@@ -19,7 +19,7 @@ const createDoctor = async () => {
             name: "Dr. Admin",
             email: email,
             password: hashedPassword,
-            image: "https://via.placeholder.com/150",
+            image: "https://placehold.co/150",
             speciality: "General Physician",
             degree: "MBBS",
             experience: "4 Years",
